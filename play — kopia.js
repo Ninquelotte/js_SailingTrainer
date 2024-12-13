@@ -29,19 +29,6 @@ function updatePosition() {
 function calculateSpeed() {
     //windDirection - kierunek wiatru (punkt 0)
     //rotation - kąt łódki
-    let fromWind = rotation;
-    let toWind = (rotation+180>360)?rotation+180-360:rotation+180;
-    let wind ='';
-    if(toWind<fromWind){
-        wind = (windDirection>=fromWind || windDirection<toWind)?'P':'L';
-    }else{
-        wind = (windDirection>=fromWind && windDirection<toWind)?'P':'L';
-    }
-
-    //const wind = (rotation<=windDirection && windDirection<rotation+180)?'P':'L';    
-    console.log(`wiatr:${windDirection},lodz:${rotation},${wind}`);
-    //if((windDirection-rotation)<= deadAngle)console.log("stop");
-
     let relativeAngle = Math.abs((rotation - windDirection + 360) % 360);
 
     let foo = relativeAngle;
