@@ -4,6 +4,8 @@ const yachtDirectionLabel = document.getElementById("yacht-direction");
 const windDirectionLabel = document.getElementById("wind-direction");
 const sailingCourseLabel = document.getElementById("sailing-course");
 const yachtIcon = document.getElementById("yacht");
+let currentSpeed = 0; // Aktualna prędkość jachtu
+const speedChangeRate = 0.025; //0.1 Wartość zmiany prędkości na klatkę (0-1)
 
 
 // Początkowa pozycja, rotacja i prędkość
@@ -37,7 +39,7 @@ function checkWindDirection(){
     }else{
         wind = (windDirection>=fromWind && windDirection<toWind)?'R':'L';
     } 
-    console.log(`wiatr:${windDirection},lodz:${rotation},${wind}`);
+    console.log(`wiatr:${windDirection},lodz:${rotation},${wind},${currentSpeed.toFixed(2)}`);
     return wind;
 }
 // Obliczanie prędkości na podstawie kąta łódki względem wiatru
@@ -125,13 +127,24 @@ function updateSailingCourse() {
 
 // Funkcja przesuwająca łódkę do przodu
 function moveForward() {
-    const speed = calculateSpeed(); // Obliczenie prędkości
-    if (speed === 0) return; // Brak ruchu w kącie martwym
+    const targetSpeed = calculateSpeed(); // Prędkość docelowa
+    if (Math.abs(currentSpeed - targetSpeed) > speedChangeRate) {
+        // Stopniowa zmiana prędkości
+        if (currentSpeed < targetSpeed) {
+            currentSpeed += speedChangeRate; // Przyspieszanie
+        } else {
+            currentSpeed -= speedChangeRate; // Zwolnienie
+        }
+    } else {
+        currentSpeed = targetSpeed; // Ustalenie prędkości docelowej
+    }
+
+    if (currentSpeed === 0) return; // Brak ruchu
 
     const angleInRadians = (rotation * Math.PI) / 180;
 
-    position.x += speed * Math.cos(angleInRadians);
-    position.y += speed * Math.sin(angleInRadians);
+    position.x += currentSpeed * Math.cos(angleInRadians);
+    position.y += currentSpeed * Math.sin(angleInRadians);
 
     // Zapobieganie wyjściu poza kontener
     if (position.x < 0) position.x = 0;
@@ -144,7 +157,7 @@ function moveForward() {
     }
 
     updatePosition();
-    updateSailingCourse(); // Uaktualnienie nazwy kursu po przesunięciu
+    updateSailingCourse();
 }
 
 // Obsługa klawiszy do zmiany kierunku
